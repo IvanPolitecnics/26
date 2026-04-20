@@ -4,62 +4,106 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Proyecto;
+use App\Models\Tarea;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProyectoController extends Controller
 {
-    // Función para mostrar la lista de proyectos en la vista principal
+    // Muestra la lista de proyectos en la vista principal
     public function index()
     {
-        // Obtenemos los proyectos creados por el usuario logueado
-        $proyectos = Proyecto::where('creado_por', Auth::id())->get();
+        $usuarioId = Auth::id();
 
-        // Retornamos la vista 'principal' pasándole la variable $proyectos
+        $proyectos = Proyecto::where('creado_por', $usuarioId)
+            ->orWhereHas('colaboradores', function ($query) use ($usuarioId) {
+                $query->where('usuarios.id', $usuarioId);
+            })
+            ->get();
+
         return view('principal', compact('proyectos'));
     }
 
-    // Función para guardar un nuevo proyecto
+    // Guarda un nuevo proyecto
     public function store(Request $request)
     {
-        // Validamos que el nombre sea obligatorio
         $request->validate([
             'nombre' => 'required|string|max:100',
         ]);
 
-        // Creamos el proyecto
         Proyecto::create([
             'nombre' => $request->nombre,
-            'descripcion' => $request->descripcion, // Puede ser nulo
-            'creado_por' => Auth::id() // El ID del usuario que está en sesión
+            'descripcion' => $request->descripcion,
+            'creado_por' => Auth::id()
         ]);
 
-        // Redirigimos de vuelta a la página principal
         return redirect()->route('principal');
     }
 
-    // Mostrar el tablero Kanban de un proyecto
+    // Muestra el tablero Kanban (CORREGIDO con $tipos)
     public function show($id)
     {
         // Buscamos el proyecto con sus tareas
         $proyecto = Proyecto::with('tareas')->findOrFail($id);
 
-        return view('tablero', compact('proyecto'));
+        // Obtenemos los tipos de tareas para el formulario rápido
+        // Asegúrate de que tu tabla se llame 'tipos_tareas' como en tu SQL manual
+        $tipos = DB::table('tipos_tareas')->get();
+
+        // Pasamos tanto el proyecto como los tipos a la vista
+        return view('tablero', compact('proyecto', 'tipos'));
     }
 
-    // Actualizar el estado de la tarea al arrastrarla
-    public function updateTareaEstado(Request $request, $id)
+    // Guarda una nueva tarea desde el tablero
+    public function storeTarea(Request $request)
     {
-        // Validamos que nos envíen un estado válido
         $request->validate([
-            'estado_id' => 'required|integer'
+            'titulo' => 'required|string|max:150',
+            'proyecto_id' => 'required|exists:proyectos,id',
+            'tipo_tarea_id' => 'required'
         ]);
 
-        // Buscamos la tarea y le cambiamos el estado
-        $tarea = \App\Models\Tarea::findOrFail($id);
+        Tarea::create([
+            'titulo' => $request->titulo,
+            'descripcion' => $request->descripcion,
+            'proyecto_id' => $request->proyecto_id,
+            'estado_id' => 1, // 'To Do' por defecto
+            'tipo_tarea_id' => $request->tipo_tarea_id,
+            'creador_id' => Auth::id(),
+        ]);
+
+        return back()->with('success', 'Tarea añadida correctamente');
+    }
+
+    // Actualiza el estado al arrastrar tareas
+    public function updateTareaEstado(Request $request, $id)
+    {
+        $request->validate(['estado_id' => 'required|integer']);
+
+        $tarea = Tarea::findOrFail($id);
         $tarea->estado_id = $request->estado_id;
         $tarea->save();
 
-        // Devolvemos una respuesta correcta en formato JSON
         return response()->json(['success' => true, 'message' => 'Estado actualizado']);
+    }
+
+    // Vista de colaboradores
+    public function colaboradores($id)
+    {
+        $proyecto = Proyecto::with('colaboradores')->findOrFail($id);
+        return view('colaboradores', compact('proyecto'));
+    }
+
+    // Añadir colaborador
+    public function addColaborador(Request $request, $id)
+    {
+        $request->validate(['usuario_id' => 'required|integer']);
+        $proyecto = Proyecto::findOrFail($id);
+
+        if (!$proyecto->colaboradores->contains($request->usuario_id)) {
+            $proyecto->colaboradores()->attach($request->usuario_id);
+        }
+
+        return back();
     }
 }

@@ -47,4 +47,16 @@ class AuthController extends Controller
             'message' => 'Usuario registrado correctamente'
         ]);
     }
+    public function logout(Request $request)
+    {
+        // Cierra la sesión del usuario
+        Auth::logout();
+
+        // Invalida la sesión actual por seguridad
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Redirige a la pantalla de login (la raíz '/')
+        return redirect()->route('login');
+    }
 }

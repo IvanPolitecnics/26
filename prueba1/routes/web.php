@@ -33,7 +33,12 @@ Route::middleware('auth')->group(function () {
     // Ruta para actualizar el estado de una tarea
     Route::patch('/tareas/{id}/estado', [App\Http\Controllers\ProyectoController::class, 'updateTareaEstado']);
 
+    Route::get('/proyectos/{id}/colaboradores', [App\Http\Controllers\ProyectoController::class, 'colaboradores'])->name('proyectos.colaboradores');
+    Route::post('/proyectos/{id}/colaboradores', [App\Http\Controllers\ProyectoController::class, 'addColaborador'])->name('proyectos.colaboradores.add');
 
+    // Ruta para cerrar sesión
+    Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
-
+    // Ruta para guardar una nueva tarea
+    Route::post('/tareas', [App\Http\Controllers\ProyectoController::class, 'storeTarea'])->name('tareas.store');
 });

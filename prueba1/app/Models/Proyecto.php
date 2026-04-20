@@ -24,5 +24,10 @@ class Proyecto extends Model
         return $this->hasMany(Tarea::class, 'proyecto_id');
     }
 
-
+    // Relación: Un proyecto tiene muchos colaboradores (miembros_proyecto)
+    public function colaboradores()
+    {
+        // belongsToMany(Modelo, 'tabla_intermedia', 'clave_foranea_origen', 'clave_foranea_destino')
+        return $this->belongsToMany(Usuario::class, 'miembros_proyecto', 'proyecto_id', 'usuario_id');
+    }
 }
