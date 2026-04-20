@@ -36,4 +36,30 @@ class ProyectoController extends Controller
         // Redirigimos de vuelta a la página principal
         return redirect()->route('principal');
     }
+
+    // Mostrar el tablero Kanban de un proyecto
+    public function show($id)
+    {
+        // Buscamos el proyecto con sus tareas
+        $proyecto = Proyecto::with('tareas')->findOrFail($id);
+
+        return view('tablero', compact('proyecto'));
+    }
+
+    // Actualizar el estado de la tarea al arrastrarla
+    public function updateTareaEstado(Request $request, $id)
+    {
+        // Validamos que nos envíen un estado válido
+        $request->validate([
+            'estado_id' => 'required|integer'
+        ]);
+
+        // Buscamos la tarea y le cambiamos el estado
+        $tarea = \App\Models\Tarea::findOrFail($id);
+        $tarea->estado_id = $request->estado_id;
+        $tarea->save();
+
+        // Devolvemos una respuesta correcta en formato JSON
+        return response()->json(['success' => true, 'message' => 'Estado actualizado']);
+    }
 }

@@ -28,4 +28,12 @@ Route::middleware('auth')->group(function () {
     // Ruta para guardar un proyecto nuevo
     Route::post('/proyectos', [ProyectoController::class, 'store'])->name('proyectos.store');
 
+    Route::get('/proyectos/{id}', [App\Http\Controllers\ProyectoController::class, 'show'])->name('proyectos.show');
+
+    // Ruta para actualizar el estado de una tarea
+    Route::patch('/tareas/{id}/estado', [App\Http\Controllers\ProyectoController::class, 'updateTareaEstado']);
+
+
+
+
 });

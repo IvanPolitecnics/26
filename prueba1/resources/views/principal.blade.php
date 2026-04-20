@@ -31,7 +31,9 @@
                 @if($proyecto->descripcion)
                     <p>{{ $proyecto->descripcion }}</p>
                 @endif
-                <button>Entrar al Tablero</button>
+                <a href="{{ route('proyectos.show', $proyecto->id) }}">
+                    <button type="button">Entrar al Tablero</button>
+                </a>
             </li>
         @empty
             <p>Todavía no tienes ningún proyecto. ¡Crea uno arriba!</p>
