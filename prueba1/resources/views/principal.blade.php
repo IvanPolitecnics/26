@@ -11,7 +11,7 @@
                     <input type="text" name="nombre" class="form-control" placeholder="Nombre del Proyecto" required>
                 </div>
                 <div class="col-md-6">
-                    <input type="text" name="descripcion" class="form-control" placeholder="Breve descripción (opcional)">
+                    <input type="text" name="descripcion" class="form-control" placeholder="Descripción">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success w-100">Crear</button>

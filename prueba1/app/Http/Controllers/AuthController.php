@@ -49,14 +49,14 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
-        // Cierra la sesión del usuario
+        // cierra la sesión del usuario
         Auth::logout();
 
-        // Invalida la sesión actual por seguridad
+        // invalida la sesión actual por seguridad
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirige a la pantalla de login (la raíz '/')
+        // redirige a la pantalla de login
         return redirect()->route('login');
     }
 }

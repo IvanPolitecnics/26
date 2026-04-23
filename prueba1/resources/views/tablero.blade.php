@@ -42,7 +42,6 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-0 text-primary">Tablero: {{ $proyecto->nombre }}</h2>
-            <p class="text-muted mb-0">Arrastra las tareas para cambiar su estado</p>
         </div>
         <a href="{{ route('principal') }}" class="btn btn-outline-secondary">Volver a Mis Proyectos</a>
     </div>
@@ -52,7 +51,6 @@
         <div class="kanban-column p-3 shadow-sm" data-estado="1">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
                 <h5 class="fw-bold text-secondary mb-0">To Do</h5>
-                <span class="badge bg-secondary rounded-pill">{{ $proyecto->tareas->where('estado_id', 1)->count() }}</span>
             </div>
             <div class="kanban-items">
                 @foreach($proyecto->tareas->where('estado_id', 1) as $tarea)
@@ -84,7 +82,6 @@
         <div class="kanban-column p-3 shadow-sm" data-estado="2">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
                 <h5 class="fw-bold text-primary mb-0">In Progress</h5>
-                <span class="badge bg-primary rounded-pill">{{ $proyecto->tareas->where('estado_id', 2)->count() }}</span>
             </div>
             <div class="kanban-items">
                 @foreach($proyecto->tareas->where('estado_id', 2) as $tarea)
@@ -116,7 +113,6 @@
         <div class="kanban-column p-3 shadow-sm" data-estado="3">
             <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
                 <h5 class="fw-bold text-success mb-0">Done</h5>
-                <span class="badge bg-success rounded-pill">{{ $proyecto->tareas->where('estado_id', 3)->count() }}</span>
             </div>
             <div class="kanban-items">
                 @foreach($proyecto->tareas->where('estado_id', 3) as $tarea)
@@ -154,7 +150,7 @@
 
             <div class="col-md-4">
                 <label class="form-label small fw-bold">Título</label>
-                <input type="text" name="titulo" class="form-control" placeholder="¿Qué hay que hacer?" required>
+                <input type="text" name="titulo" class="form-control" placeholder="Nombre" required>
             </div>
 
             <div class="col-md-3">
@@ -167,8 +163,8 @@
             </div>
 
             <div class="col-md-3">
-                <label class="form-label small fw-bold">Descripción (opcional)</label>
-                <input type="text" name="descripcion" class="form-control" placeholder="Detalles cortos...">
+                <label class="form-label small fw-bold">Descripción</label>
+                <input type="text" name="descripcion" class="form-control" placeholder="Descripcion">
             </div>
 
             <div class="col-md-2 d-flex align-items-end">
@@ -178,7 +174,7 @@
     </div>
 
     <script>
-        // Mantenemos el mismo script de arrastre
+        // script de arrastre
         const tasks = document.querySelectorAll('.kanban-task');
         const columns = document.querySelectorAll('.kanban-column');
         let draggedTask = null;

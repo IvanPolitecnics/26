@@ -26,7 +26,7 @@
                             </li>
                         @empty
                             <div class="alert alert-light text-center border mt-2" role="alert">
-                                No hay colaboradores adicionales aún.
+                                No hay colaboradores.
                             </div>
                         @endforelse
                     </ul>
@@ -38,15 +38,11 @@
             <div class="card shadow-sm border-0 h-100">
                 <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
                     <h5 class="card-title fw-bold text-primary">Añadir Colaborador</h5>
-                    <small class="text-muted">Lista cargada dinámicamente desde tu API</small>
                 </div>
                 <div class="card-body">
 
                     <ul id="lista-usuarios-api" class="list-group list-group-flush">
-                        <li class="list-group-item text-center text-muted border-0 mt-3">
-                            <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
-                            Cargando usuarios...
-                        </li>
+
                     </ul>
 
                     <form id="form-add-colaborador" action="{{ route('proyectos.colaboradores.add', $proyecto->id) }}" method="POST" style="display: none;">
@@ -60,23 +56,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Petición a tu API
+            // Peticion API
             fetch("{{ url('api/usuarios') }}")
                 .then(response => response.json())
                 .then(usuarios => {
                     const lista = document.getElementById('lista-usuarios-api');
-                    lista.innerHTML = ''; // Limpiamos el texto de "Cargando..."
+                    lista.innerHTML = '';
 
-                    // El creador del proyecto
+                    // el creador del proyecto
                     const creadorId = {{ $proyecto->creado_por }};
 
-                    // Magia de Blade: Convertimos los IDs de los colaboradores actuales a un array de JavaScript
+                    // convertimos los ids de los colaboradores actuales a un array de js
                     const colaboradoresActuales = @json($proyecto->colaboradores->pluck('id'));
 
                     let usuariosDisponibles = 0;
 
                     usuarios.forEach(usuario => {
-                        // Solo mostramos al usuario si NO es el creador y NO está ya en la lista de colaboradores
+                        // solo mostramos al usuario si NO es el creador y NO esta ya en la lista de colaboradores
                         if (usuario.id !== creadorId && !colaboradoresActuales.includes(usuario.id)) {
                             usuariosDisponibles++;
 
@@ -95,7 +91,7 @@
                         }
                     });
 
-                    // Si todos los usuarios ya están en el proyecto, mostramos un mensaje
+                    // si todos los usuarios ya estan en el proyecto, mostramos un mensaje
                     if (usuariosDisponibles === 0) {
                         lista.innerHTML = `
                             <div class="alert alert-light text-center border mt-2" role="alert">
@@ -114,7 +110,7 @@
                 });
         });
 
-        // Función que se ejecuta al darle al botón "Añadir"
+        // función que se ejecuta al darle al botón "Añadir"
         function añadirUsuario(id) {
             document.getElementById('input-usuario-id').value = id;
             document.getElementById('form-add-colaborador').submit();

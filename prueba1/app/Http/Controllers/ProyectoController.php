@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProyectoController extends Controller
 {
-    // Muestra la lista de proyectos en la vista principal
+    // lista de proyectos en la vista principal
     public function index()
     {
         $usuarioId = Auth::id();
@@ -24,7 +24,7 @@ class ProyectoController extends Controller
         return view('principal', compact('proyectos'));
     }
 
-    // Guarda un nuevo proyecto
+    // guarda un nuevo proyecto
     public function store(Request $request)
     {
         $request->validate([
@@ -40,21 +40,20 @@ class ProyectoController extends Controller
         return redirect()->route('principal');
     }
 
-    // Muestra el tablero Kanban (CORREGIDO con $tipos)
+    // muestra el tablero
     public function show($id)
     {
-        // Buscamos el proyecto con sus tareas
+        // buscamos el proyecto con sus tareas
         $proyecto = Proyecto::with('tareas')->findOrFail($id);
 
-        // Obtenemos los tipos de tareas para el formulario rápido
-        // Asegúrate de que tu tabla se llame 'tipos_tareas' como en tu SQL manual
+        // obtenemos los tipos de tareas para el formulario rapido
         $tipos = DB::table('tipos_tareas')->get();
 
-        // Pasamos tanto el proyecto como los tipos a la vista
+        // pasamos tanto el proyecto como los tipos a la vista
         return view('tablero', compact('proyecto', 'tipos'));
     }
 
-    // Guarda una nueva tarea desde el tablero
+    // guarda una nueva tarea desde el tablero
     public function storeTarea(Request $request)
     {
         $request->validate([
@@ -75,7 +74,7 @@ class ProyectoController extends Controller
         return back()->with('success', 'Tarea añadida correctamente');
     }
 
-    // Actualiza el estado al arrastrar tareas
+    // actualiza el estado al arrastrar tareas
     public function updateTareaEstado(Request $request, $id)
     {
         $request->validate(['estado_id' => 'required|integer']);
@@ -87,14 +86,14 @@ class ProyectoController extends Controller
         return response()->json(['success' => true, 'message' => 'Estado actualizado']);
     }
 
-    // Vista de colaboradores
+    // vista de colaboradores
     public function colaboradores($id)
     {
         $proyecto = Proyecto::with('colaboradores')->findOrFail($id);
         return view('colaboradores', compact('proyecto'));
     }
 
-    // Añadir colaborador
+    // añadir colaborador
     public function addColaborador(Request $request, $id)
     {
         $request->validate(['usuario_id' => 'required|integer']);
